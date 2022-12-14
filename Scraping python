@@ -1,0 +1,56 @@
+import requests
+
+def get_product(result):
+    
+    grocerys = result['data']['rows']
+    
+    for grocery in grocerys:
+        
+        category = grocery['category']['k_name_en']
+        p_name_ru = grocery['p_name_ru']
+        p_price_1 = grocery['p_price_1']
+        p_price_2 = grocery['p_price_2']
+        p_price_3 = grocery['p_price_3']
+        p_img = grocery['p_img']
+        categoryKId = grocery['categoryKId']
+        p_id = grocery['p_id']
+        url_img = 'https://api.100haryt.com.tm/img/products/'
+        url_prod = 'https://100haryt.com.tm/product/'+str(categoryKId)+'/'+str(p_id)
+        offer = [category, p_name_ru, p_price_1,p_price_2, p_price_3, url_img+p_img, url_prod]
+    
+        print(offer)
+
+def get_products():
+    offset = 0
+    cat_id = 1
+    off = 0
+    while True:
+
+        params = {
+            'taze': '',
+            'premium': '',
+            'sale': '',
+            'low': '',
+            'high': '',
+            'limit': '50',
+            'offset': offset,
+            'smart_id': '',
+            'cat_id': cat_id,
+            'sub_id': '',
+        }
+        response = requests.get('https://api.100haryt.com.tm/api/filter_products', params=params)
+        result = response.json()
+        offset += 50
+        if len(result['data']['rows']) == 0:
+            cat_id += 1
+            offset = off 
+        if cat_id == 25:
+            break
+        get_product(result)
+           
+def main():
+    get_products()
+    
+
+if __name__ == '__main__':
+    main()
